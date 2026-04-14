@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Configuração da semente para reprodutibilidade
+np.random.seed(42)
+
+# Parâmetros
+n_registros = 200000
+dias = ['Terça (Normal)', 'Quinta (Sobrecarga)', 'Sexta (Minha Solução)', 'Outros Dias']
+
+data = {
+    'id_transacao': range(1, n_registros + 1),
+    'dia_analisado': np.random.choice(dias, n_registros, p=[0.2, 0.3, 0.3, 0.2]),
+    'volume_bipado': np.random.randint(50, 500, n_registros),
+}
+
+df = pd.DataFrame(data)
+
+# Lógica de Esforço (Onde a mágica acontece)
+def calcular_esforço(row):
+    # Quinta-feira: O Gargalo (Esforço alto)
+    if row['dia_analisado'] == 'Quinta (Sobrecarga)':
+        return np.random.uniform(3.0, 4.0)
+    # Sexta-feira: Sua Solução (Esforço baixo)
+    elif row['dia_analisado'] == 'Sexta (Minha Solução)':
+        return np.random.uniform(0.4, 0.7)
+    # Terça: A Base
+    elif row['dia_analisado'] == 'Terça (Normal)':
+        return np.random.uniform(0.5, 0.6)
+    else:
+        return np.random.uniform(1.5, 2.5)
+
+df['esforço_por_unidade'] = df.apply(calcular_esforço, axis=1)
+
+# Exportando para o CSV que você usou no SQL/Power BI
+df.to_csv('base_produtividade_logistica.csv', index=False)
+print("Base de 200.000 linhas gerada com sucesso!")
